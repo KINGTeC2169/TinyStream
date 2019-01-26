@@ -1,7 +1,11 @@
 # Decode the image into something useful
 import cv2
+import numpy as np
+
 
 def showImage(self, encimg):
+
+    encimg = np.frombuffer(encimg, dtype="uint8")
 
     frame = cv2.imdecode(encimg, 1)
 
