@@ -5,7 +5,11 @@ import time
 import cv2
 import numpy
 
+<<<<<<< Updated upstream
 TCP_IP = '192.168.1.10'
+=======
+TCP_IP = '192.168.1.6'
+>>>>>>> Stashed changes
 TCP_PORT = 5001
 
 sock = socket.socket()
