@@ -1,5 +1,7 @@
 #!/usr/bin/python
 import socket
+import time
+
 import cv2
 import numpy
 
@@ -31,7 +33,7 @@ while True:
 
     newX, newY = decimg.shape[1] * 4, decimg.shape[0] * 4
     decimg = cv2.resize(decimg, (int(newX), int(newY)))
-
+    
     cv2.imshow('SERVER',decimg)
     k = cv2.waitKey(5) & 0xFF
     if k == 27:
