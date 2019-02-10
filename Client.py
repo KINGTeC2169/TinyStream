@@ -5,7 +5,7 @@ import time
 import cv2
 import numpy
 
-TCP_IP = 'localhost'
+TCP_IP = '192.168.1.10'
 TCP_PORT = 5001
 
 sock = socket.socket()
@@ -18,7 +18,7 @@ while True:
     newX, newY = frame.shape[1] * .5, frame.shape[0] * .5
     frame = cv2.resize(frame, (int(newX), int(newY)))
 
-    encode_param=[int(cv2.IMWRITE_JPEG_QUALITY),7]
+    encode_param=[int(cv2.IMWRITE_JPEG_QUALITY),30]
     result, imgencode = cv2.imencode('.jpg', frame, encode_param)
     data = numpy.array(imgencode)
     stringData = data.tostring()

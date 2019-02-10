@@ -12,13 +12,15 @@ def recvall(sock, count):
         count -= len(newbuf)
     return buf
 
-TCP_IP = 'localhost'
+TCP_IP = ''
 TCP_PORT = 5001
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((TCP_IP, TCP_PORT))
-s.listen(True)
+s.listen(5)
+print("waiting")
 conn, addr = s.accept()
+print("accepted connection")
 
 while True:
     length = recvall(conn,16)
