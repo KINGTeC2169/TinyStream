@@ -1,21 +1,34 @@
-# Decode the image into something useful
+#!/usr/bin/python
+import socket
+import time
+
 import cv2
-import numpy as np
+import numpy
 
-def showImage(encimg):
+TCP_IP = 'localhost'
+TCP_PORT = 5001
 
-    encimg = np.frombuffer(encimg, dtype="uint8")
-    frame = cv2.imdecode(encimg, 1)
+sock = socket.socket()
+sock.connect((TCP_IP, TCP_PORT))
 
-    print(frame)
+capture = cv2.VideoCapture(0)
+while True:
+    ret, frame = capture.read()
 
-    # Blow the image back up
-    newX, newY = frame.shape[1] * 4, frame.shape[0] * 4
+    newX, newY = frame.shape[1] * .5, frame.shape[0] * .5
     frame = cv2.resize(frame, (int(newX), int(newY)))
 
-    cv2.imshow("Frame", frame)
+    encode_param=[int(cv2.IMWRITE_JPEG_QUALITY),7]
+    result, imgencode = cv2.imencode('.jpg', frame, encode_param)
+    data = numpy.array(imgencode)
+    stringData = data.tostring()
 
-    while True:
-        encimg = np.frombuffer(encimg.decode(), dtype="uint8")
-        frame = cv2.imdecode(encimg, 1)
-        cv2.imshow("Image", frame)
+    sock.send(str(len(stringData)).ljust(16).encode())
+    sock.send(stringData)
+
+    k = cv2.waitKey(5) & 0xFF
+    if k == 27:
+        break
+
+cv2.waitKey(0)
+cv2.destroyAllWindows()

@@ -1,45 +1,39 @@
-import pickle
-import sys
+#!/usr/bin/python
+import socket
 import cv2
+import numpy
 
-import numpy as np
+def recvall(sock, count):
+    buf = b''
+    while count:
+        newbuf = sock.recv(count)
+        if not newbuf: return None
+        buf += newbuf
+        count -= len(newbuf)
+    return buf
 
-if __name__ == '__main__':
+TCP_IP = 'localhost'
+TCP_PORT = 5001
 
-    # Create VideoCapture object to grab frames from the USB Camera as color matrices
-    cap = cv2.VideoCapture("video.mp4")
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.bind((TCP_IP, TCP_PORT))
+s.listen(True)
+conn, addr = s.accept()
 
-    while True:
-        # Read a frame from the camera
-        ret, frame = cap.read()
+while True:
+    length = recvall(conn,16)
+    stringData = recvall(conn, int(length))
+    data = numpy.fromstring(stringData, dtype='uint8')
 
-        # Make the image 1/4 the size
-        newX, newY = frame.shape[1] * .5, frame.shape[0] * .5
-        frame = cv2.resize(frame, (int(newX), int(newY)))
+    decimg=cv2.imdecode(data,1)
 
-        # Set the encode parameters to terrible
-        encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 7]
+    newX, newY = decimg.shape[1] * 4, decimg.shape[0] * 4
+    decimg = cv2.resize(decimg, (int(newX), int(newY)))
 
-        # Encode the image into a string
-        #results, x = cv2.imencode('.jpg', frame, encode_param)
+    cv2.imshow('SERVER',decimg)
+    k = cv2.waitKey(5) & 0xFF
+    if k == 27:
+        break
 
-        enc = pickle.dumps(frame, protocol=2)
-        print(sys.getsizeof(enc))
-        # Define output string
-        # out = x.tostring()
-        # print(type(out))
-        # encimg = np.frombuffer(out, dtype="uint8")
-        # frame = cv2.imdecode(encimg, 1)
-        #
-        # print(out)
-
-        # Blow the image back up
-        newX, newY = frame.shape[1] * 4, frame.shape[0] * 4
-        frame = cv2.resize(frame, (int(newX), int(newY)))
-
-        cv2.imshow("Frame", frame)
-
-        k = cv2.waitKey(5) & 0xFF
-        if k == 27:
-            break
-
+cv2.waitKey(0)
+cv2.destroyAllWindows()
