@@ -14,30 +14,54 @@ def recvall(sock, count):
         count -= len(newbuf)
     return buf
 
-TCP_IP = ''
-TCP_PORT = 5001
 
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.bind((TCP_IP, TCP_PORT))
-s.listen(5)
-print("waiting")
-conn, addr = s.accept()
-print("accepted connection")
+def spawnThread():
 
-while True:
-    length = recvall(conn,16)
-    stringData = recvall(conn, int(length))
-    data = numpy.fromstring(stringData, dtype='uint8')
+    TCP_IP = ''
+    TCP_PORT = 1324
 
-    decimg=cv2.imdecode(data,1)
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.bind((TCP_IP, TCP_PORT))
+    s.listen(5)
+    print("waiting on",TCP_PORT)
+    conn, addr = s.accept()
+    print("accepted connection")
 
-    newX, newY = decimg.shape[1] * 4, decimg.shape[0] * 4
-    decimg = cv2.resize(decimg, (int(newX), int(newY)))
-    
-    cv2.imshow('SERVER',decimg)
-    k = cv2.waitKey(5) & 0xFF
-    if k == 27:
-        break
+    while True:
 
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+        try:
+
+            length = recvall(conn,16)
+            stringData = recvall(conn, int(length))
+            data = numpy.fromstring(stringData, dtype='uint8')
+
+            decimg=cv2.imdecode(data,1)
+
+            newX, newY = decimg.shape[1] * 2, decimg.shape[0] * 2
+            decimg = cv2.resize(decimg, (int(newX), int(newY)))
+
+            cv2.imshow('Cameras', decimg)
+            k = cv2.waitKey(5) & 0xFF
+            if k == 27:
+                break
+
+        except:
+            break
+
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+
+def startStreamer():
+
+    while True:
+        try:
+            spawnThread()
+        except:
+            time.sleep(1)
+            print("Failed to connect, retrying in 1 second")
+            startStreamer()
+
+
+startStreamer()
+
