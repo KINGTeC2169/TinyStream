@@ -5,6 +5,7 @@ import time
 import cv2
 import numpy
 
+stopped = False
 
 def recvall(sock, count):
     buf = b''
@@ -28,15 +29,15 @@ def runClient():
     capture.set(3, 480)
     capture.set(4, 360)
 
-    capture1 = cv2.VideoCapture(1)
+    capture1 = cv2.VideoCapture('video.mp4')
     capture1.set(3, 480)
     capture1.set(4, 360)
 
-    capture2 = cv2.VideoCapture(2)
+    capture2 = cv2.VideoCapture('video.mp4')
     capture2.set(3, 480)
     capture2.set(4, 360)
 
-    capture3 = cv2.VideoCapture("video.mp4")
+    capture3 = cv2.VideoCapture('video.mp4')
     capture3.set(3, 480)
     capture3.set(4, 360)
 
@@ -80,11 +81,11 @@ def runClient():
 
 def start():
     while True:
+        if(stopped):
+            exit()
         try:
             runClient()
-        except:
-            print("fail")
+        except Exception as e:
+            print("fail", e)
             time.sleep(1);
             start()
-
-start()

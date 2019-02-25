@@ -5,6 +5,8 @@ import time
 import cv2
 import numpy
 
+stopped = False
+
 def recvall(sock, count):
     buf = b''
     while count:
@@ -28,6 +30,8 @@ def spawnThread():
     print("accepted connection")
 
     while True:
+        if(stopped):
+            exit()
 
         try:
 
@@ -55,13 +59,11 @@ def spawnThread():
 def startStreamer():
 
     while True:
+        if(stopped):
+            exit()
         try:
             spawnThread()
         except:
             time.sleep(1)
             print("Failed to connect, retrying in 1 second")
             startStreamer()
-
-
-startStreamer()
-
