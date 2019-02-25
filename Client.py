@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import socket
+import sys
 import time
 
 import cv2
@@ -18,51 +19,55 @@ def recvall(sock, count):
 
 def runClient():
     TCP_IP = '127.0.0.1'
-    TCP_PORT = 1324
+    TCP_PORT = int(sys.argv[1])
 
     sock = socket.socket()
     print("Connecting to Socket")
     sock.connect((TCP_IP, TCP_PORT))
     print("Connected!")
 
-    capture = cv2.VideoCapture(0)
+    try:
+        vid = int(sys.argv[2])
+    except:
+        vid = sys.argv[2]
+    capture = cv2.VideoCapture(vid)
     capture.set(3, 480)
     capture.set(4, 360)
 
-    capture1 = cv2.VideoCapture('video.mp4')
-    capture1.set(3, 480)
-    capture1.set(4, 360)
-
-    capture2 = cv2.VideoCapture('video.mp4')
-    capture2.set(3, 480)
-    capture2.set(4, 360)
-
-    capture3 = cv2.VideoCapture('video.mp4')
-    capture3.set(3, 480)
-    capture3.set(4, 360)
+    # capture1 = cv2.VideoCapture('video.mp4')
+    # capture1.set(3, 480)
+    # capture1.set(4, 360)
+    #
+    # capture2 = cv2.VideoCapture('video.mp4')
+    # capture2.set(3, 480)
+    # capture2.set(4, 360)
+    #
+    # capture3 = cv2.VideoCapture('video.mp4')
+    # capture3.set(3, 480)
+    # capture3.set(4, 360)
 
     while True:
         ret, frame = capture.read()
         newX, newY = frame.shape[1] * .5, frame.shape[0] * .5
         frame = cv2.resize(frame, (int(newX), int(newY)))
 
-        ret, frame1 = capture1.read()
-        newX, newY = frame1.shape[1] * .5, frame1.shape[0] * .5
-        frame1 = cv2.resize(frame1, (int(newX), int(newY)))
+        # ret, frame1 = capture1.read()
+        # newX, newY = frame1.shape[1] * .5, frame1.shape[0] * .5
+        # frame1 = cv2.resize(frame1, (int(newX), int(newY)))
+        #
+        # ret, frame2 = capture2.read()
+        # newX, newY = frame2.shape[1] * .5, frame2.shape[0] * .5
+        # frame2 = cv2.resize(frame2, (int(newX), int(newY)))
+        #
+        # ret, frame3 = capture3.read()
+        # newX, newY = frame3.shape[1] * .5, frame3.shape[0] * .5
+        # frame3 = cv2.resize(frame3, (int(newX), int(newY)))
+        #
+        # top = numpy.hstack((frame, frame1))
+        # bottom = numpy.hstack((frame2, frame3))
+        # frame = numpy.vstack((top, bottom))
 
-        ret, frame2 = capture2.read()
-        newX, newY = frame2.shape[1] * .5, frame2.shape[0] * .5
-        frame2 = cv2.resize(frame2, (int(newX), int(newY)))
-
-        ret, frame3 = capture3.read()
-        newX, newY = frame3.shape[1] * .5, frame3.shape[0] * .5
-        frame3 = cv2.resize(frame3, (int(newX), int(newY)))
-
-        top = numpy.hstack((frame, frame1))
-        bottom = numpy.hstack((frame2, frame3))
-        frame = numpy.vstack((top, bottom))
-
-        encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 30]
+        encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 7]
 
         result, imgencode = cv2.imencode('.jpg', frame, encode_param)
         data = numpy.array(imgencode)
@@ -81,11 +86,13 @@ def runClient():
 
 def start():
     while True:
-        if(stopped):
-            exit()
+        # if(stopped):
+        #     exit()
         try:
             runClient()
         except Exception as e:
             print("fail", e)
             time.sleep(1);
             start()
+
+start()
