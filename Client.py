@@ -2,6 +2,7 @@
 import socket
 import sys
 import time
+import traceback
 
 import cv2
 import numpy
@@ -85,9 +86,8 @@ def start():
             # Start the client
             runClient(sock)
         except Exception as e:
-            # If it dies, give it a second to rest and force it to try again.
-            print("fail", e)
-            time.sleep(1)
+            print(traceback.format_exc(10))
+            time.sleep(1);
             start()
 
 # Start the Client
