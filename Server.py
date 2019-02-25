@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import _thread
 import socket
 import time
 
@@ -17,21 +18,20 @@ def recvall(sock, count):
     return buf
 
 
-def spawnThread():
+def spawnThread(port):
 
     TCP_IP = ''
-    TCP_PORT = 1324
+    TCP_PORT = port
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     s.bind((TCP_IP, TCP_PORT))
-    s.listen(5)
-    print("waiting on",TCP_PORT)
+    s.listen(1)
+    print("searching for camera on port",TCP_PORT)
     conn, addr = s.accept()
     print("accepted connection")
 
     while True:
-        if(stopped):
-            exit()
 
         try:
 
@@ -44,13 +44,14 @@ def spawnThread():
             newX, newY = decimg.shape[1] * 2, decimg.shape[0] * 2
             decimg = cv2.resize(decimg, (int(newX), int(newY)))
 
-            cv2.imshow('Cameras', decimg)
+            cv2.imshow(str(port), decimg)
             k = cv2.waitKey(5) & 0xFF
             if k == 27:
                 break
 
         except:
             break
+            print("Broke")
 
     cv2.waitKey(0)
     cv2.destroyAllWindows()
@@ -59,11 +60,17 @@ def spawnThread():
 def startStreamer():
 
     while True:
-        if(stopped):
-            exit()
         try:
-            spawnThread()
-        except:
+            _thread.start_new_thread(spawnThread, (1111, ))
             time.sleep(1)
-            print("Failed to connect, retrying in 1 second")
+            _thread.start_new_thread(spawnThread, (1112, ))
+            time.sleep(1)
+            _thread.start_new_thread(spawnThread, (1113, ))
+            time.sleep(1)
+            _thread.start_new_thread(spawnThread, (1114, ))
+        except Exception as e:
+            print(e)
+            time.sleep(10)
             startStreamer()
+
+startStreamer()
