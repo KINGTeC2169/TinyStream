@@ -61,8 +61,10 @@ class CameraServer(Thread):
                 length = recvall(self.conn, 16)
 
                 # Grab image data based on the length data previously recieved
-                stringData = recvall(self.conn, int(length))
-
+                if length is not None:
+                    stringData = recvall(self.conn, int(length))
+                else:
+                    break
                 # Decode JPG base64 string into a NumPy matrix of RGB data
                 data = numpy.fromstring(stringData, dtype='uint8')
 
