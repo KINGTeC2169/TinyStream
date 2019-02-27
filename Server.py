@@ -1,3 +1,5 @@
+import cv2
+
 from CameraServer import CameraServer
 
 # Method that starts the ServerFolde system
@@ -5,6 +7,7 @@ def startStreamer():
 
     # Create and start the camera threads
     # These threads cannot die.  They now only need to be started once.
+
     c1 = CameraServer(1111)
     c1.start()
     c2 = CameraServer(1112)

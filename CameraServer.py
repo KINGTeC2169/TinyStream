@@ -79,7 +79,7 @@ class CameraServer(Thread):
                 # Use the OpenCV famous break statement to allow imshow to function properly.
                 # Don't ask me i'm not smart enough to understand OpenCV under the hood
                 k = cv2.waitKey(5) & 0xFF
-                if k == 27:
+                if k == '+':
                     break
 
             # If something breaks, say what happened
@@ -91,6 +91,10 @@ class CameraServer(Thread):
 
 
     def run(self):
+
+        print("Starting Port", self.port, "Thread")
+        cv2.namedWindow(str(self.port), cv2.WINDOW_NORMAL)
+        print("Window on", self.port, "Started!")
 
         # Keep trying forever
         while True:
