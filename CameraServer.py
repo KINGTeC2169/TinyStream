@@ -1,10 +1,12 @@
+import traceback
+
 import numpy
 import socket
 from threading import Thread
 
 import cv2
 
-
+# Method to grab the size of the image array and verify that it is being decoded correctly
 def recvall(sock, count):
     buf = b''
     while count:
@@ -15,20 +17,19 @@ def recvall(sock, count):
     return buf
 
 
-class CameraClient(Thread):
+class CameraServer(Thread):
 
     # Define the IP for easy changing
     TCP_IP = '127.0.0.1'
 
-    def __init__(self, port):
-        Thread.__init__(self)
-        self.port = port
+    def attemptConnection(self):
 
         # Create a new socket with standard SOCK STREAM settings
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         # Set socket to be able to reconnect immediately and ignore timeouts
         self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.s.settimeout(1)
 
         # Bind socket to IP and port supplied from constructor
         self.s.bind((self.TCP_IP, self.port))
@@ -41,12 +42,16 @@ class CameraClient(Thread):
         self.conn, self.addr = self.s.accept()
         print("accepted connection")
 
+    def __init__(self, port):
+        Thread.__init__(self)
+        self.port = port
+
     # Close the socket
     def disconnect(self):
         print("Port", self.port, "Disconnecting")
         self.s.close()
 
-    def run(self):
+    def startLoop(self):
 
         while True:
 
@@ -79,9 +84,22 @@ class CameraClient(Thread):
 
             # If something breaks, say what happened
             except Exception as e:
-                print("Broke", e)
+                print("Broke in show loop")
+                print(traceback.format_exc())
                 break
-
         # Close and destroy OpenCV stuff on crash.
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+
+
+    def run(self):
+
+        # Keep trying forever
+        while True:
+            try:
+                # Attempt to connect to socket
+                self.attemptConnection()
+                # You made it this far, start the processing loop
+                self.startLoop()
+            except:
+                # Something went wrong.  Try to reconnect
+                print("Socket", self.port, "Died!  Trying again")
+

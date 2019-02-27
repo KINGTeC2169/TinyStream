@@ -2,12 +2,13 @@
 import socket
 import sys
 import time
+import traceback
 
 import cv2
 import numpy
 
-def runClient(sock):
 
+def runClient(sock):
     # Set those constants for easy access
     TCP_IP = '127.0.0.1'
 
@@ -71,11 +72,11 @@ def runClient(sock):
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
+
 # This horrific piece of garbage just verifies that even if it crashes it gets up and tries again.  Please don't throw
 # things at me.
 
 def start():
-
     while True:
 
         # Create the socket object
@@ -86,9 +87,11 @@ def start():
             runClient(sock)
         except Exception as e:
             # If it dies, give it a second to rest and force it to try again.
-            print("fail", e)
+            sock.close()
+            print(traceback.format_exc())
             time.sleep(1)
             start()
+
 
 # Start the Client
 start()

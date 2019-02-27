@@ -1,30 +1,19 @@
-from CameraClient import CameraClient
+from CameraServer import CameraServer
 
-# Method that starts the Server system
+# Method that starts the ServerFolde system
 def startStreamer():
 
-    # Another infinite starter that forces all of the clients to keep trying until the end of time, but it currently
-    # times out after a single try because the sockets are broken so it needs to be fixed.
+    # Create and start the camera threads
+    # These threads cannot die.  They now only need to be started once.
+    c1 = CameraServer(1111)
+    c1.start()
+    c2 = CameraServer(1112)
+    c2.start()
+    c3 = CameraServer(1113)
+    c3.start()
+    c4 = CameraServer(1114)
+    c4.start()
 
-    while True:
-        try:
-
-            # Create c1 through c4
-            c1 = CameraClient(1111)
-            c2 = CameraClient(1112)
-            c3 = CameraClient(1113)
-            c4 = CameraClient(1114)
-
-            # CHARGE!!!
-            c1.start()
-            c2.start()
-            c3.start()
-            c4.start()
-
-        except Exception as e:
-            # Oh, you broke?  That's too bad.  Try again.  and again.
-            print(e)
-            startStreamer()
 
 # Start this flaming pile of garbage
 startStreamer()
