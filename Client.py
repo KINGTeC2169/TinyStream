@@ -40,7 +40,7 @@ def runClient(sock):
 
     while True:
 
-        # Grab a frame from the webcan
+        # Grab a frame from the webcam
         ret, frame = capture.read()
 
         # C R O N C H   that image down to half size

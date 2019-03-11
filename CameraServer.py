@@ -1,3 +1,5 @@
+import math
+import time
 import traceback
 
 import numpy
@@ -21,6 +23,13 @@ class CameraServer(Thread):
 
     # Define the IP for easy changing
     TCP_IP = '127.0.0.1'
+
+    # For FPS counting
+    fps = -1
+    start_time = time.time()
+    fps_update_time = time.time()
+
+    byte_size = -1
 
     def attemptConnection(self):
 
@@ -74,6 +83,18 @@ class CameraServer(Thread):
                 # Blow image back up to size
                 newX, newY = decimg.shape[1] * 2, decimg.shape[0] * 2
                 decimg = cv2.resize(decimg, (int(newX), int(newY)))
+
+                # Draw the size of the image
+                if time.time() - self.fps_update_time > 0.5:
+                    self.byte_size = length
+                cv2.putText(decimg, str(int(self.byte_size)) + " bytes", (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+
+                # Draw an FPS counter
+                if time.time() - self.fps_update_time > 0.5:
+                    self.fps = 1 / (time.time() - self.start_time)
+                    self.fps_update_time = time.time()
+                self.start_time = time.time()
+                cv2.putText(decimg, str(math.floor(self.fps)), (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
 
                 # Show image on a window named after its port.
                 cv2.imshow(str(self.port), decimg)
