@@ -22,7 +22,7 @@ def recvall(sock, count):
 class CameraServer(Thread):
 
     # Define the IP for easy changing
-    TCP_IP = '127.0.0.1'
+    TCP_IP = ''
 
     # For FPS counting
     fps = -1
@@ -38,7 +38,6 @@ class CameraServer(Thread):
 
         # Set socket to be able to reconnect immediately and ignore timeouts
         self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.s.settimeout(1)
 
         # Bind socket to IP and port supplied from constructor
         self.s.bind((self.TCP_IP, self.port))
@@ -114,10 +113,6 @@ class CameraServer(Thread):
 
 
     def run(self):
-
-        print("Starting Port", self.port, "Thread")
-        cv2.namedWindow(str(self.port), cv2.WINDOW_NORMAL)
-        print("Window on", self.port, "Started!")
 
         # Keep trying forever
         while True:

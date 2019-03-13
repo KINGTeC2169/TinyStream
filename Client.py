@@ -7,10 +7,13 @@ import traceback
 import cv2
 import numpy
 
+capture = None
 
 def runClient(sock):
+    global capture
+
     # Set those constants for easy access
-    TCP_IP = '127.0.0.1'
+    TCP_IP = 'MAX-PC.local'
 
     # Grab the port number from the command line
     TCP_PORT = int(sys.argv[1])
@@ -57,6 +60,8 @@ def runClient(sock):
         # Turn NumPy array into a string so we can ship er' on over the information superhighway
         stringData = data.tostring()
 
+        print(sys.getsizeof(stringData))
+
         # Send the size of the data for efficient unpacking
         sock.send(str(len(stringData)).ljust(16).encode())
 
@@ -69,7 +74,7 @@ def runClient(sock):
         if k == 27:
             break
 
-    cv2.waitKey(0)
+    cv2.waitKey(10)
     cv2.destroyAllWindows()
 
 
@@ -77,8 +82,9 @@ def runClient(sock):
 # things at me.
 
 def start():
-    while True:
+    global capture
 
+    while True:
         # Create the socket object
         sock = socket.socket()
 
@@ -88,6 +94,7 @@ def start():
         except Exception as e:
             # If it dies, give it a second to rest and force it to try again.
             sock.close()
+            capture.release()
             print(traceback.format_exc())
             time.sleep(1)
             start()
