@@ -13,7 +13,7 @@ def runClient(sock):
     global capture
 
     # Set those constants for easy access
-    TCP_IP = 'MAX-PC.local'
+    TCP_IP = 'MAXPC.local'
 
     # Grab the port number from the command line
     TCP_PORT = int(sys.argv[1])

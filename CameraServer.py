@@ -42,7 +42,7 @@ class CameraServer(Thread):
         self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
         # Bind socket to IP and port supplied from constructor
-        self.s.bind((self.TCP_IP, self.port))
+        self.s.bind(('', self.port))
 
         # Listen for exactly 1 host
         self.s.listen(1)
@@ -125,6 +125,8 @@ class CameraServer(Thread):
                 self.attemptConnection()
                 # You made it this far, start the processing loop
                 self.startLoop()
+            except ConnectionRefusedError:
+                pass
             except:
                 # Something went wrong.  Try to reconnect
                 print("Socket", self.port, "Died!  Trying again")
